@@ -34,7 +34,7 @@ namespace hpp {
     class HPP_MANIPULATION_CORBA_DLLAPI Server
     {
     public:
-      Server (int argc, char *argv[], bool multiThread = false,
+      Server (int argc, const char* argv[], bool multiThread = false,
 	      const std::string& poaName = "child");
       ~Server ();
       /// Set planner that will be controlled by server

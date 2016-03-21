@@ -102,6 +102,22 @@ namespace hpp {
 	}
       }
 
+      void Robot::insertRobotSRDFModel (const char* robotName,
+          const char* packageName, const char* modelName,
+          const char* srdfSuffix)
+	throw (Error)
+      {
+	try {
+          manipulation::DevicePtr_t robot = getOrCreateRobot (problemSolver_);
+	  manipulation::srdf::addRobotSRDFModel (robot, std::string (robotName),
+              std::string (packageName), std::string (modelName),
+              std::string (srdfSuffix));
+          problemSolver_->resetProblem ();
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
+	}
+      }
+
       void Robot::insertObjectModel (const char* objectName,
           const char* rootJointType, const char* packageName,
           const char* modelName, const char* urdfSuffix,
@@ -163,7 +179,7 @@ namespace hpp {
 	    problemSolver_->addObstacle (obj, true, true);
 	    hppDout (info, "Adding obstacle " << obj->name ());
           }
-          typedef Container <JointAndShapes_t>::ElementMap_t ShapeMap;
+          typedef core::Container <JointAndShapes_t>::ElementMap_t ShapeMap;
           const ShapeMap& m = object->getAll <JointAndShapes_t> ();
           for (ShapeMap::const_iterator it = m.begin ();
               it != m.end (); it++) {

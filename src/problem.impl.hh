@@ -39,6 +39,8 @@ namespace hpp {
 	  problemSolver_ = problemSolver;
 	}
 
+        virtual Names_t* getAvailable (const char* what) throw (hpp::Error);
+
         virtual void createGrasp (const char* graspName,
             const char* gripperName, const char* handleName)
 	  throw (hpp::Error);
@@ -51,10 +53,22 @@ namespace hpp {
             const char* jointName, const hpp::floatSeq& value)
 	  throw (hpp::Error);
 
+        virtual void createLockedExtraDof (const char* lockedDofName,
+            const CORBA::ULong index, const hpp::floatSeq& value)
+	  throw (hpp::Error);
+
         virtual Names_t* getEnvironmentContactNames ()
           throw (hpp::Error);
 
         virtual Names_t* getRobotContactNames ()
+          throw (hpp::Error);
+
+        virtual Names_t* getEnvironmentContact (const char* name,
+            intSeq_out indexes, floatSeqSeq_out points)
+          throw (hpp::Error);
+
+        virtual Names_t* getRobotContact (const char* name,
+            intSeq_out indexes, floatSeqSeq_out points)
           throw (hpp::Error);
 
         virtual void createPlacementConstraint (const char* placName,

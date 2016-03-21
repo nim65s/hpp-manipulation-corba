@@ -52,6 +52,12 @@ module hpp
         in string srdfSuffix)
       raises (Error);
 
+    /// Load a SRDF for the robot. Several SRDF can thus be loaded for the same
+    /// robot
+    void insertRobotSRDFModel (in string robotName, in string packageName,
+        in string modelName, in string srdfSuffix)
+      raises (Error);
+
     ///  Insert humanoid robot model as a child of the root joint of the Device
     ///
     /// \param robotName key of the robot in ProblemSolver object map

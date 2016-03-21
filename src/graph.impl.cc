@@ -20,9 +20,6 @@
 #include <hpp/util/debug.hh>
 #include <hpp/util/pointer.hh>
 
-#include <hpp/core/steering-method-straight.hh>
-#include <hpp/core/weighed-distance.hh>
-
 #include <hpp/manipulation/problem.hh>
 #include <hpp/manipulation/roadmap.hh>
 #include <hpp/manipulation/graph/node-selector.hh>
@@ -37,11 +34,28 @@
 namespace hpp {
   namespace manipulation {
     namespace impl {
-      using core::SteeringMethodPtr_t;
-      using core::SteeringMethodStraight;
-      using core::WeighedDistance;
-      using core::WeighedDistancePtr_t;
       using CORBA::ULong;
+
+      namespace {
+        template <typename T> std::string toStr () { return typeid(T).name(); }
+        template <> std::string toStr <graph::NodePtr_t> () { return "Node"; }
+        template <> std::string toStr <graph::EdgePtr_t> () { return "Edge"; }
+        template <> std::string toStr <graph::GraphPtr_t> () { return "Graph"; }
+        template <> std::string toStr <graph::NodeSelectorPtr_t> () { return "SubGraph"; }
+        template <> std::string toStr <graph::LevelSetEdgePtr_t> () { return "LevelSetEdge"; }
+        template <> std::string toStr <graph::WaypointEdgePtr_t> () { return "WaypointEdge"; }
+
+        template <typename T> boost::shared_ptr<T> getComp (ID id) { 
+          boost::shared_ptr <T> comp = HPP_DYNAMIC_PTR_CAST(T,
+              graph::GraphComponent::get(id).lock());
+          if (!comp) {
+            std::stringstream ss;
+            ss << "ID " << id << " is not a " << toStr <T>();
+            throw Error (ss.str().c_str());
+          }
+          return comp;
+        }
+      }
 
       std::vector <std::string> expandPassiveDofsNameVector (
           const hpp::Names_t& names, const size_t& s)
@@ -64,16 +78,8 @@ namespace hpp {
         if (!robot) throw Error ("Build the robot first.");
 	// Create default steering method to store in edges, until we define a
 	// factory for steering methods.
-	WeighedDistancePtr_t distance
-	  (HPP_DYNAMIC_PTR_CAST (WeighedDistance,
-				 problemSolver_->problem ()->distance ()));
-	SteeringMethodPtr_t sm;
-	if  (distance) {
-	  sm = SteeringMethodStraight::create (robot, distance);
-	} else {
-	  sm = SteeringMethodStraight::create (robot);
-	}
-        graph_ = graph::Graph::create(graphName, robot, sm);
+        graph_ = graph::Graph::create(graphName, robot,
+            problemSolver_->problem());
         graph_->maxIterations (problemSolver_->maxIterations ());
         graph_->errorThreshold (problemSolver_->errorThreshold ());
         problemSolver_->constraintGraph (graph_);
@@ -103,7 +109,7 @@ namespace hpp {
           if (!ns) throw Error ("Not a subgraph");
           graph::Nodes_t nl;
           graph::NodePtr_t node;
-          for (int i = 0; i < nodes.length(); ++i) {
+          for (unsigned int i = 0; i < nodes.length(); ++i) {
             node = HPP_DYNAMIC_PTR_CAST(graph::Node,
                 graph::GraphComponent::get(nodes[i]).lock());
             if (!node) throw Error ("The nodes could not be found.");
@@ -619,6 +625,17 @@ namespace hpp {
           }
           freq = _freq;
           values = _values;
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
+	}
+      }
+
+      void Graph::setShort (ID edgeId, CORBA::Boolean isShort)
+        throw (hpp::Error)
+      {
+        graph::EdgePtr_t edge = getComp <graph::Edge> (edgeId);
+        try {
+          edge->setShort (isShort);
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}

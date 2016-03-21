@@ -272,8 +272,10 @@ class ProblemSolver (object):
     #         by stacking elementary numerical constraints,
     #  \param names list of names of the numerical constraints as
     #         inserted by method hpp::core::ProblemSolver::addNumericalConstraint.
-    def setNumericalConstraints (self, name, names):
-        return self.client.basic.problem.setNumericalConstraints (name, names)
+    def setNumericalConstraints (self, name, names, priorities = None):
+        if priorities is None:
+            priorities = [ 0 for i in names ]
+        return self.client.basic.problem.setNumericalConstraints (name, names, priorities)
 
     ## Apply constraints
     #
@@ -296,7 +298,6 @@ class ProblemSolver (object):
     # \param lockedDofName key of the constraint in the map
     # \param jointName name of the joint
     # \param value value of the joint configuration
-    # \param compType Comparison type: "Equality" or "EqualToZero"
     def createLockedJoint (self, lockedDofName, jointName, value):
         return self.client.manipulation.problem.createLockedJoint \
             (lockedDofName, jointName, value)
@@ -307,7 +308,6 @@ class ProblemSolver (object):
     # \param lockJointBname base name of the LockedJoint constraints
     #        (It will be completed by '_xyz' and '_SO3'),
     # \param values config of the locked joints (7 float)
-    # \param compType Comparison type: "Equality" or "EqualToZero"
     def lockFreeFlyerJoint (self, freeflyerBname, lockJointBname,
                             values = (0,0,0,1,0,0,0)):
         lockedJoints = list ()
@@ -325,7 +325,6 @@ class ProblemSolver (object):
     # \param lockJointBname base name of the LockedJoint constraints
     #        (It will be completed by '_xy' and '_rz'),
     # \param values config of the locked joints (4 float)
-    # \param compType Comparison type: "Equality" or "EqualToZero"
     def lockPlanarJoint (self, planarBname, lockJointBname, values = (0,0,1,0)):
         lockedJoints = list ()
         namet = lockJointBname + '_xy'
@@ -374,11 +373,15 @@ class ProblemSolver (object):
     def selectPathPlanner (self, pathPlannerType):
         return self.client.basic.problem.selectPathPlanner (pathPlannerType)
 
-    ## Select path optimizer type
-    #  \param Name of the path optimizer type, either "RandomShortcut" or
-    #   any type added by core::ProblemSolver::addPathOptimizerType
-    def selectPathOptimizer (self, pathOptimizerType):
-        return self.client.basic.problem.selectPathOptimizer (pathOptimizerType)
+    ## Add path optimizer type
+    #  \see hpp.corbaserver.problem_solver.ProblemSolver.addPathOptimizer
+    def addPathOptimizer (self, pathOptimizerType):
+        return self.client.basic.problem.addPathOptimizer (pathOptimizerType)
+
+    ## Clear path optimizers
+    #  \see hpp.corbaserver.problem_solver.ProblemSolver.clearPathOptimizers
+    def clearPathOptimizers (self):
+        return self.client.basic.problem.clearPathOptimizers ()
 
     ## Select path validation method
     #  \param Name of the path validation method, either "Discretized"

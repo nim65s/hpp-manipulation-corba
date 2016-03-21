@@ -16,6 +16,7 @@
 # hpp-manipulation-corba.  If not, see
 # <http://www.gnu.org/licenses/>.
 
+import warnings
 from hpp import Transform
 from hpp.corbaserver.manipulation import Client as ManipulationClient
 from hpp.corbaserver.wholebody_step import Client as WholebodyStepClient
@@ -214,6 +215,13 @@ class Robot (object):
     def setJointBounds (self, jointName, inJointBound):
         return self.client.basic.robot.setJointBounds (jointName, inJointBound)
 
+    ## Set the position of root joint of a robot in world frame
+    ## \param robotName key of the robot in ProblemSolver object map.
+    ## \param position constant position of the root joint in world frame in
+    ##        initial configuration.
+    def setRootJointPosition (self, robotName, position):
+        return self.client.manipulation.robot.setRootJointPosition (robotName, position)
+
     ## Set bounds on the translation part of the freeflyer joint.
     #
     #  Valid only if the robot has a freeflyer joint.
@@ -296,8 +304,10 @@ class Robot (object):
     #  \param jointName name of the joint owning the body,
     #  \param collision whether collision with object should be computed,
     #  \param distance whether distance to object should be computed.
-    def removeObstacleFromJoint (self, objectName, jointName, collision,
-                                 distance):
+    def removeObstacleFromJoint (self, objectName, jointName, collision = True,
+                                 distance = False):
+        if collision is not True or distance is not False:
+            warnings.warn ("parameters collision and distance are deprecated")
         return self.client.basic.obstacle.removeObstacleFromJoint \
             (objectName, jointName, collision, distance)
 
@@ -360,11 +370,11 @@ class HumanoidRobot (Robot):
     # \param robotName name of the first robot that is loaded now,
     # \param rootJointType type of root joint among ("freeflyer", "planar",
     #        "anchor"),
-    def __init__ (self, compositeName, robotName, rootJointType):
-        Robot.__init__ (self, compositeName, robotName, rootJointType)
+    def __init__ (self, compositeName, robotName, rootJointType, load = True):
+        Robot.__init__ (self, compositeName, robotName, rootJointType, load)
 
     def loadModel (self, robotName, rootJointType):
         self.client.manipulation.robot.create (self.name)
-        self.client.manipulation.robot.loadHumanoidModel \
+        self.insertHumanoidModel \
             (robotName, rootJointType, self.packageName, self.urdfName,
              self.urdfSuffix, self.srdfSuffix)

@@ -15,7 +15,13 @@
 // hpp-manipulation-corba.  If not, see
 // <http://www.gnu.org/licenses/>.
 
+#include "problem.impl.hh"
+
+#include <boost/algorithm/string/case_conv.hpp>
+#include <boost/assign/list_of.hpp>
+
 #include <hpp/util/debug.hh>
+#include <hpp/core/distance.hh>
 #include <hpp/core/comparison-type.hh>
 #include <hpp/core/locked-joint.hh>
 #include <hpp/core/config-projector.hh>
@@ -31,7 +37,6 @@
 #include <hpp/manipulation/graph/node.hh>
 #include <hpp/manipulation/graph/edge.hh>
 #include <hpp/manipulation/axial-handle.hh>
-#include "problem.impl.hh"
 
 namespace hpp {
   namespace manipulation {
@@ -56,6 +61,54 @@ namespace hpp {
           DevicePtr_t robot = p->robot ();
           if (!robot) throw Error ("Robot not found.");
           return robot;
+        }
+
+        Names_t* jointAndShapes (const JointAndShapes_t& js,
+            intSeq_out indexes_out, floatSeqSeq_out points) {
+          char** nameList = Names_t::allocbuf((ULong) js.size ());
+          Names_t *jointNames = new Names_t ((ULong) js.size(), (ULong) js.size(),
+              nameList);
+
+          intSeq* indexes = new intSeq ();
+          indexes->length ((ULong) js.size ());
+          indexes_out = indexes;
+
+          CORBA::Long rank = 0;
+          std::size_t nbPts = 0;
+          for (JointAndShapes_t::const_iterator itJs = js.begin ();
+              itJs != js.end (); ++itJs) {
+            if (itJs->first) {
+              nameList[rank] = new char[itJs->first->name().length ()+1];
+              strcpy (nameList[rank], itJs->first->name().c_str ());
+            } else {
+              nameList[rank] = new char[5];
+              strcpy (nameList[rank], "NONE");
+            }
+            nbPts += itJs->second.size ();
+            (*indexes)[rank] = nbPts;
+            ++rank;
+          }
+
+          floatSeqSeq* pts = new hpp::floatSeqSeq ();
+          points = pts;
+          pts->length ((CORBA::ULong) nbPts);
+
+          rank = 0;
+          std::size_t iJs = 0;
+          for (JointAndShapes_t::const_iterator itJs = js.begin ();
+              itJs != js.end (); ++itJs) {
+            for (std::size_t i = 0; i < itJs->second.size (); ++i) {
+              floatSeq p; p.length (3);
+              p[0] = itJs->second[i][0];
+              p[1] = itJs->second[i][1];
+              p[2] = itJs->second[i][2];
+              (*pts)[rank] = p;
+              ++rank;
+            }
+            assert ((*indexes)[iJs] == rank);
+            ++iJs;
+          }
+          return jointNames;
         }
       }
 
@@ -97,6 +150,38 @@ namespace hpp {
 
       Problem::Problem () : problemSolver_ (0x0)
       {
+      }
+
+      Names_t* Problem::getAvailable (const char* what) throw (hpp::Error)
+      {
+        std::string w (what);
+        boost::algorithm::to_lower(w);
+        typedef std::list <std::string> Ret_t;
+        Ret_t ret;
+
+        if (w == "gripper") {
+          ret = getRobotOrThrow (problemSolver_)->getKeys <model::GripperPtr_t, Ret_t> ();
+        } else if (w == "handle") {
+          ret = getRobotOrThrow (problemSolver_)->getKeys <HandlePtr_t, Ret_t> ();
+        } else if (w == "lockedjoint") {
+          ret = problemSolver_->getKeys <core::LockedJointPtr_t, Ret_t> ();
+        } else if (w == "type") {
+          ret = boost::assign::list_of ("Gripper") ("Handle")
+            ("LockedJoint");
+        } else {
+          throw Error ("Type not understood");
+        }
+
+        char** nameList = Names_t::allocbuf(ret.size());
+        Names_t *names = new Names_t (ret.size(), ret.size(), nameList);
+        std::size_t i = 0;
+        for (Ret_t::const_iterator it = ret.begin (); it != ret.end(); ++it) {
+          nameList [i] =
+            (char*) malloc (sizeof(char)*(it->length ()+1));
+            strcpy (nameList [i], it->c_str ());
+            ++i;
+        }
+        return names;
       }
 
       void Problem::createGrasp (const char* graspName,
@@ -142,7 +227,7 @@ namespace hpp {
           const HandlePtr_t& handle = robot->get <HandlePtr_t> (handleName);
           std::string name (graspName);
           value_type c = handle->clearance () + gripper->clearance ();
-          value_type width = 2*c * 1.01;
+          value_type width = c * 1.01;
 	  NumericalConstraintPtr_t constraint =
 	    handle->createPreGrasp (gripper);
 	  NumericalConstraintPtr_t ineq_positive =
@@ -174,11 +259,29 @@ namespace hpp {
 	}
       }
 
+      void Problem::createLockedExtraDof
+      (const char* lockedDofName, const CORBA::ULong index,
+       const hpp::floatSeq& value)
+	throw (hpp::Error)
+      {
+	try {
+	  // Get robot in hppPlanner object.
+          DevicePtr_t robot = getRobotOrThrow (problemSolver_);
+	  vector_t config = floatSeqToVector (value);
+
+          LockedJointPtr_t lockedJoint
+            (LockedJoint::create (robot, index, config));
+          problemSolver_->add <LockedJointPtr_t> (lockedDofName, lockedJoint);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
       Names_t* Problem::getEnvironmentContactNames ()
         throw (hpp::Error)
       {
         try {
-	  typedef Container <JointAndShapes_t>::ElementMap_t ShapeMap;
+	  typedef core::Container <JointAndShapes_t>::ElementMap_t ShapeMap;
 	  const ShapeMap& m = problemSolver_->getAll <JointAndShapes_t> ();
 
 	  char** nameList = Names_t::allocbuf((ULong) m.size ());
@@ -202,7 +305,7 @@ namespace hpp {
         throw (hpp::Error)
       {
         try {
-	  typedef Container <JointAndShapes_t>::ElementMap_t ShapeMap;
+	  typedef core::Container <JointAndShapes_t>::ElementMap_t ShapeMap;
           DevicePtr_t r = getRobotOrThrow (problemSolver_);
 	  const ShapeMap& m = r->getAll <JointAndShapes_t> ();
 
@@ -223,6 +326,34 @@ namespace hpp {
         }
       }
 
+      Names_t* Problem::getEnvironmentContact (const char* name,
+            intSeq_out indexes, floatSeqSeq_out points)
+        throw (hpp::Error)
+      {
+        try {
+	  const JointAndShapes_t& js =
+            problemSolver_->get <JointAndShapes_t> (name);
+
+          return jointAndShapes (js, indexes, points);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+        }
+      }
+
+      Names_t* Problem::getRobotContact (const char* name,
+            intSeq_out indexes, hpp::floatSeqSeq_out points)
+        throw (hpp::Error)
+      {
+        try {
+          DevicePtr_t r = getRobotOrThrow (problemSolver_);
+	  const JointAndShapes_t& js = r->get <JointAndShapes_t> (name);
+
+          return jointAndShapes (js, indexes, points);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+        }
+      }
+
       void Problem::createPlacementConstraint (const char* placName,
 					       const char* surface1,
 					       const char* surface2)
@@ -230,7 +361,7 @@ namespace hpp {
       {
 	try {
 	  problemSolver_->createPlacementConstraint (placName, surface1,
-						     surface2);
+						     surface2, 1e-3);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -252,6 +383,7 @@ namespace hpp {
           using model::CenterOfMassComputationPtr_t;
 
           std::vector <ForceData> fds;
+          std::size_t nbPoints = 0;
 
           for (CORBA::ULong i = 0; i < shapesName.length(); ++i) {
             JointAndShapes_t l = robot->get <JointAndShapes_t>
@@ -265,6 +397,7 @@ namespace hpp {
               fd.supportJoint = NULL;
               fd.normal = - c.N_;
               fd.points = c.Pts_;
+              nbPoints += c.Pts_.size ();
               fds.push_back (fd);
             }
           }
@@ -275,7 +408,9 @@ namespace hpp {
           com->computeMass ();
           QPStaticStabilityPtr_t c = QPStaticStability::create (placName, robot,
               fds, com);
-          problemSolver_->addNumericalConstraint (placName, c);
+          problemSolver_->addNumericalConstraint (placName,
+              NumericalConstraint::create (c, core::EqualToZero::create())
+              );
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -362,7 +497,12 @@ namespace hpp {
 	ConfigurationPtr_t config = floatSeqToConfig (problemSolver_, input);
         ConfigurationPtr_t qoffset = floatSeqToConfig (problemSolver_, qnear);
         try {
-	  success = edge->applyConstraints (*qoffset, *config);
+          value_type dist = 0;
+          core::NodePtr_t nNode = problemSolver_->roadmap()->nearestNode (qoffset, dist);
+          if (dist < 1e-8)
+            success = edge->applyConstraints (nNode, *config);
+          else
+            success = edge->applyConstraints (*qoffset, *config);
 
           ConstraintSetPtr_t constraint =
             problemSolver_->constraintGraph ()->configConstraint (edge);
@@ -414,7 +554,7 @@ namespace hpp {
         indexProj = -1;
         try {
           core::PathPtr_t path;
-	  success = edge->build (path, *q1, *q2, *problemSolver_->problem()->steeringMethod ()->distance());
+	  success = edge->build (path, *q1, *q2);
           if (!success) return false;
           pv = HPP_DYNAMIC_PTR_CAST (core::PathVector, path);
           indexNotProj = problemSolver_->paths ().size ();

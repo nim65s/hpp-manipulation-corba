@@ -130,6 +130,9 @@ namespace hpp {
               hpp::floatSeqSeq_out values)
             throw (hpp::Error);
 
+          virtual void setShort (ID edgeId, CORBA::Boolean isShort)
+            throw (hpp::Error);
+
         private:
           ProblemSolverPtr_t problemSolver_;
           graph::GraphPtr_t graph_;

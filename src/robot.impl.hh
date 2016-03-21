@@ -46,6 +46,11 @@ namespace hpp {
               const char* srdfSuffix)
             throw (hpp::Error);
 
+          virtual void insertRobotSRDFModel (const char* robotName,
+              const char* packageName, const char* modelName,
+              const char* srdfSuffix)
+            throw (hpp::Error);
+
           virtual void insertObjectModel (const char* objectName,
               const char* rootJointType, const char* packageName,
               const char* modelName, const char* urdfSuffix,

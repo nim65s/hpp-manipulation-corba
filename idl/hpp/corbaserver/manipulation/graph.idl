@@ -168,6 +168,9 @@ module hpp {
 
         void getHistogramValue (in ID edgeId, out floatSeq freq, out floatSeqSeq values)
           raises (Error);
+
+        void setShort (in ID edgeId, in boolean isShort)
+          raises (Error);
       }; // interface Graph
     }; // module manipulation
   }; // module corbaserver

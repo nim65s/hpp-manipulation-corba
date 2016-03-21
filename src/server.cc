@@ -25,7 +25,7 @@
 
 namespace hpp {
   namespace manipulation {
-    Server::Server (int argc, char *argv[], bool multiThread,
+    Server::Server (int argc, const char* argv[], bool multiThread,
 		    const std::string& poaName) : 
       graphImpl_ (new corba::Server <impl::Graph>
 		  (argc, argv, multiThread, poaName)),
