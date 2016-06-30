@@ -20,6 +20,7 @@
 #if HPP_MANIPULATION_HAS_WHOLEBODY_STEP
   #include <hpp/corbaserver/wholebody-step/server.hh>
 #endif
+#include <hpp/corbaserver/rbprm/server.hh>
 #include <hpp/corbaserver/manipulation/server.hh>
 #include <hpp/manipulation/problem-solver.hh>
 
@@ -27,23 +28,31 @@ typedef hpp::corbaServer::Server CorbaServer;
 #if HPP_MANIPULATION_HAS_WHOLEBODY_STEP
   typedef hpp::wholebodyStep::Server WholebodyServer;
 #endif
+
+typedef hpp::rbprm::Server RbPrmServer;
+
 typedef hpp::manipulation::Server ManipulationServer;
 typedef hpp::manipulation::ProblemSolver ProblemSolver;
 typedef hpp::manipulation::ProblemSolverPtr_t ProblemSolverPtr_t;
 typedef hpp::manipulation::ManipulationPlanner ManipulationPlanner;
 typedef hpp::manipulation::ManipulationPlannerPtr_t ManipulationPlannerPtr_t;
 
-int main (int argc, char* argv [])
+int main (int argc, const char* argv [])
 {
-  ProblemSolverPtr_t problemSolver = new ProblemSolver();
+  // ProblemSolverPtr_t problemSolver = new ProblemSolver();
+  hpp::core::ProblemSolverPtr_t problemSolver = hpp::core::ProblemSolver::create();
 
-  CorbaServer corbaServer (problemSolver, argc,
-			   const_cast<const char**> (argv), true);
+  CorbaServer corbaServer (problemSolver, argc, argv, true);
+
   #if HPP_MANIPULATION_HAS_WHOLEBODY_STEP  
-    WholebodyServer wbsServer (argc, const_cast<const char**> (argv), true);
+    WholebodyServer wbsServer (argc, argv, true);
     wbsServer.setProblemSolverMap (corbaServer.problemSolverMap());
   #endif
-  ManipulationServer manipServer (argc, const_cast<const char**> (argv), true);
+
+  RbPrmServer rbprmServer (argc, argv, true);
+  rbprmServer.setProblemSolver (problemSolver);
+
+  ManipulationServer manipServer (argc, argv, true);
   manipServer.setProblemSolverMap (corbaServer.problemSolverMap());
 
   corbaServer.startCorbaServer ();
@@ -51,6 +60,8 @@ int main (int argc, char* argv [])
     wbsServer.startCorbaServer ("hpp", "corbaserver",
 				"wholebodyStep", "problem");
   #endif
+  rbprmServer.startCorbaServer ("hpp", "corbaserver",
+				"rbprm");
   manipServer.startCorbaServer ("hpp", "corbaserver",
 				"manipulation");
   corbaServer.processRequest(true);
