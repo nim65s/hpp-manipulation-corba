@@ -17,51 +17,56 @@
 
 #include <hpp/corbaserver/server.hh>
 #include <hpp/manipulation/package-config.hh>
+
 #if HPP_MANIPULATION_HAS_WHOLEBODY_STEP
-  #include <hpp/corbaserver/wholebody-step/server.hh>
+# include <hpp/corbaserver/wholebody-step/server.hh>
 #endif
-#include <hpp/corbaserver/rbprm/server.hh>
+#ifdef HPP_MANIPULATION_HAS_RBPRM  
+# include <hpp/corbaserver/rbprm/server.hh>
+#endif // HPP_MANIPULATION_HAS_RBPRM  
+
 #include <hpp/corbaserver/manipulation/server.hh>
 #include <hpp/manipulation/problem-solver.hh>
 
 typedef hpp::corbaServer::Server CorbaServer;
-#if HPP_MANIPULATION_HAS_WHOLEBODY_STEP
-  typedef hpp::wholebodyStep::Server WholebodyServer;
-#endif
-
-typedef hpp::rbprm::Server RbPrmServer;
-
 typedef hpp::manipulation::Server ManipulationServer;
+
+typedef hpp::core::ProblemSolver CoreProblemSolver;
+typedef hpp::core::ProblemSolverPtr_t CoreProblemSolverPtr_t;
 typedef hpp::manipulation::ProblemSolver ProblemSolver;
 typedef hpp::manipulation::ProblemSolverPtr_t ProblemSolverPtr_t;
-typedef hpp::manipulation::ManipulationPlanner ManipulationPlanner;
-typedef hpp::manipulation::ManipulationPlannerPtr_t ManipulationPlannerPtr_t;
 
 int main (int argc, const char* argv [])
 {
-  // ProblemSolverPtr_t problemSolver = new ProblemSolver();
-  hpp::core::ProblemSolverPtr_t problemSolver = hpp::core::ProblemSolver::create();
+  ProblemSolverPtr_t problemSolver = new ProblemSolver();
 
   CorbaServer corbaServer (problemSolver, argc, argv, true);
-
-  #if HPP_MANIPULATION_HAS_WHOLEBODY_STEP  
-    WholebodyServer wbsServer (argc, argv, true);
-    wbsServer.setProblemSolverMap (corbaServer.problemSolverMap());
-  #endif
-
-  RbPrmServer rbprmServer (argc, argv, true);
-  rbprmServer.setProblemSolver (problemSolver);
 
   ManipulationServer manipServer (argc, argv, true);
   manipServer.setProblemSolverMap (corbaServer.problemSolverMap());
 
   corbaServer.startCorbaServer ();
-  #if HPP_MANIPULATION_HAS_WHOLEBODY_STEP  
-    wbsServer.startCorbaServer ("hpp", "corbaserver",
+
+#if HPP_MANIPULATION_HAS_WHOLEBODY_STEP  
+  hpp::wholebodyStep::Server wbsServer (argc, argv, true);
+  wbsServer.setProblemSolverMap (corbaServer.problemSolverMap());
+  wbsServer.startCorbaServer ("hpp", "corbaserver",
 				"wholebodyStep", "problem");
-  #endif
+#endif
+
+#ifdef HPP_MANIPULATION_HAS_RBPRM  
+  // hpp-rbprm-corba does not use the problem solver map so we have to create
+  // manually one problem solver for it.
+  // Python script MUST call selectProblem("rbprm") before any request
+  // related to the RBPRM problem they wish to solve.
+  CoreProblemSolverPtr_t problemSolverRbprm = CoreProblemSolver::create();
+  corbaServer.problemSolverMap()->map_["rbprm"] = problemSolverRbprm;
+  hpp::rbprm::Server rbprmServer (argc, argv, true);
+  rbprmServer.setProblemSolver (problemSolverRbprm);
   rbprmServer.startCorbaServer ("hpp", "corbaserver",
 				"rbprm");
+#endif // HPP_MANIPULATION_HAS_RBPRM  
+
   manipServer.startCorbaServer ("hpp", "corbaserver",
 				"manipulation");
   corbaServer.processRequest(true);

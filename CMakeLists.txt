@@ -59,12 +59,16 @@ SET(DOXYGEN_TREEVIEW "NO" CACHE STRING "Set to YES to generate a tree view in th
 
 SET(HPP_MANIPULATION_HAS_WHOLEBODY_STEP TRUE
   CACHE BOOL "Compile with dependency to hpp-wholebody-step-corba")
+SET(HPP_MANIPULATION_HAS_RBPRM FALSE
+  CACHE BOOL "Compile with dependency to hpp-rbprm-corba")
 
 ADD_REQUIRED_DEPENDENCY("hpp-corbaserver >= 3")
 IF (HPP_MANIPULATION_HAS_WHOLEBODY_STEP)
   ADD_REQUIRED_DEPENDENCY ("hpp-wholebody-step-corba >= 3")
 ENDIF ()
-ADD_REQUIRED_DEPENDENCY("hpp-rbprm-corba")
+IF (HPP_MANIPULATION_HAS_RBPRM)
+  ADD_REQUIRED_DEPENDENCY("hpp-rbprm-corba")
+ENDIF (HPP_MANIPULATION_HAS_RBPRM)
 IF (NOT CLIENT_ONLY)
   ADD_DOC_DEPENDENCY("hpp-core >= 3")
   ADD_REQUIRED_DEPENDENCY("hpp-manipulation")
