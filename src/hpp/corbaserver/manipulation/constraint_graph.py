@@ -312,11 +312,13 @@ class ConstraintGraph (object):
                         nc.append (pair.constraint + "/complement")
                     else:
                         nc.append (pair.constraint)
+                    nopdofs.append("")
                     pdofs.append (pair.passiveJoints)
         if pregrasps is not None:
             for g in pregrasps:
                 for pair in self.pregrasps [g]:
                     nc.append (pair.constraint)
+                    nopdofs.append("")
                     pdofs.append (pair.passiveJoints)
 
         if node is not None:
