@@ -182,7 +182,7 @@ namespace hpp {
 	// factory for steering methods.
         graph_ = graph::Graph::create(graphName, robot,
             problemSolver()->problem());
-        graph_->maxIterations (problemSolver()->maxIterations ());
+        graph_->maxIterations (problemSolver()->maxIterProjection ());
         graph_->errorThreshold (problemSolver()->errorThreshold ());
         problemSolver()->constraintGraph (graph_);
         problemSolver()->problem()->constraintGraph (graph_);
