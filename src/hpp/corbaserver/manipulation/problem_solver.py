@@ -483,6 +483,35 @@ class ProblemSolver (object):
     def setMaxIterations (self, iterations):
 	return self.client.basic.problem.setMaxIterations (iterations)
 
+    ## Set the maximal number of iterations in projection
+    def getMaxIterations (self):
+        from warnings import warn
+        warn ("method getMaxIterations is deprecated: use getMaxIterProjection"+
+              " instead")
+	return self.client.basic.problem.getMaxIterProjection ()
+
+    ## Set the maximal number of iterations in projection
+    def setMaxIterations (self, iterations):
+        from warnings import warn
+        warn ("method setMaxIterations is deprecated: use setMaxIterProjection"+
+              " instead")
+	return self.client.basic.problem.setMaxIterProjection (iterations)
+
+    ## Get the maximal number of iterations in projection
+    def getMaxIterPathPlanning (self):
+	return self.client.basic.problem.getMaxIterPathPlanning ()
+
+    ## Set the maximal number of iterations in projection
+    def setMaxIterPathPlanning (self, iterations):
+	return self.client.basic.problem.setMaxIterPathPlanning (iterations)
+
+    ## Get the maximal number of iterations in projection
+    def getMaxIterProjection (self):
+	return self.client.basic.problem.getMaxIterProjection ()
+
+    ## Set the maximal number of iterations in projection
+    def setMaxIterProjection (self, iterations):
+	return self.client.basic.problem.setMaxIterProjection (iterations)
 
     ## \}
 
