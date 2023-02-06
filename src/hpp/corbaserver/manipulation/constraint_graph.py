@@ -188,7 +188,6 @@ class ConstraintGraph(object):
         isInNode=None,
         automaticBuilder=True,
     ):
-
         """
         Create a WaypointEdge.
         \\param nodeFrom, nodeTo, name, weight, isInNode see createEdge note,
@@ -522,7 +521,6 @@ class ConstraintGraph(object):
         format="pdf",
         open=True,
     ):
-
         """
         Display the current graph.
         The graph is printed in DOT format. Command dot must be
