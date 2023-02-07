@@ -143,7 +143,6 @@ class GraphFactoryAbstract(ABC):
     """
 
     def __init__(self):
-
         # # Reduces the problem combinatorial.
         # Function called to check whether a grasps is allowed.
         # It takes as input a list of handle indices (or None) such
