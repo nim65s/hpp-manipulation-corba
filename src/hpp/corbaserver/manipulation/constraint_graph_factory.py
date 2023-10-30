@@ -28,9 +28,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 # DAMAGE.
 
-import re
 import abc
+import re
 import sys
+
 from .constraints import Constraints
 from .possible_grasps import PossibleGrasps
 
@@ -41,8 +42,8 @@ class GraspIsAllowed(object):
     def __init__(self):
         """
         Successively calls all the validation instances
-         \param grasps the set of grasp to validate
-         \return False if one validation fails, True otherwise
+         param grasps the set of grasp to validate
+         return False if one validation fails, True otherwise
         """
         self.graspValidations_ = list()
 

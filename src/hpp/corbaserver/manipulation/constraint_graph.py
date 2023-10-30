@@ -29,7 +29,9 @@
 # DAMAGE.
 
 from __future__ import print_function
+
 from subprocess import Popen
+
 from .constraints import Constraints
 
 
@@ -125,7 +127,7 @@ class ConstraintGraph(object):
         To have an edge that cannot be selected by the M-RRT algorithm but is still
         acceptable, set its weight to zero.
         """
-        if type(isInNode) != str:
+        if not isinstance(isInNode, str):
             if isInNode is not None:
                 from warnings import warn
 
@@ -202,7 +204,7 @@ class ConstraintGraph(object):
         False.
         """
 
-        if type(isInNode) != str:
+        if not isinstance(isInNode, str):
             if isInNode is not None:
                 from warnings import warn
 
@@ -375,7 +377,7 @@ class ConstraintGraph(object):
         pregrasps=None,
         numConstraints=[],
     ):
-        if not type(graph) is bool:
+        if type(graph) is not bool:
             raise TypeError(
                 "ConstraintGraph.addConstraints: "
                 + "graph argument should be a boolean, got "
