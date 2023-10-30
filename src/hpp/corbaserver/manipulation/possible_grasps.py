@@ -39,7 +39,7 @@ class PossibleGrasps(object):
     def __init__(self, grippers, handles, grasps):
         """
         Constructor
-        \param grasps a dictionaty whose keys are the grippers registered in the
+        param grasps a dictionaty whose keys are the grippers registered in the
                factory and whose values are lists of handles also registered in
                the factory
         """
