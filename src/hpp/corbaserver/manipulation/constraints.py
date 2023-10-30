@@ -40,11 +40,11 @@ class Constraints:
     """
 
     def __init__(self, grasps=[], pregrasps=[], numConstraints=[], lockedJoints=[]):
-        if type(grasps) is str:
+        if isinstance(grasps, str):
             raise TypeError("argument grasps should be a list of strings")
-        if type(pregrasps) is str:
+        if isinstance(pregrasps, str):
             raise TypeError("argument pregrasps should be a list of strings")
-        if type(numConstraints) is str:
+        if isinstance(numConstraints, str):
             raise TypeError("argument numConstraints should be a list of strings")
         if lockedJoints != []:
             from warnings import warn

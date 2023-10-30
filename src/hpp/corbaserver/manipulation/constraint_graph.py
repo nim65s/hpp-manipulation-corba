@@ -100,7 +100,7 @@ class ConstraintGraph(object):
                The first should be the most restrictive one as a configuration
         will be in the first node for which the constraint are satisfied.
         """
-        if type(node) is str:
+        if isinstance(node, str):
             node = [node]
         if priority is None:
             priority = [
@@ -377,7 +377,7 @@ class ConstraintGraph(object):
         pregrasps=None,
         numConstraints=[],
     ):
-        if type(graph) is not bool:
+        if not isinstance(graph, bool):
             raise TypeError(
                 "ConstraintGraph.addConstraints: "
                 + "graph argument should be a boolean, got "
@@ -508,7 +508,7 @@ class ConstraintGraph(object):
         If the name of a node or an edges is a key of the dictionnary,
         it is replaced by the corresponding value.
         """
-        if type(textToTex) is not dict:
+        if not isinstance(textToTex, dict):
             raise TypeError("Argument textToTex must be a dictionnary.")
         self.textToTex = textToTex
 
