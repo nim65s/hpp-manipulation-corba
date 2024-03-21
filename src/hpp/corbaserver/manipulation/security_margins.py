@@ -104,7 +104,7 @@ class SecurityMargins:
         for g in grippers:
             j = self.ps.robot.getGripperPositionInJoint(g)[0]
             self.gripperToRobot[g] = self.jointToRobot[j]
-            self.gripperToJoints[g] = [j] + self.ps.robot.getChildJoints(j)
+            self.gripperToJoints[g] = [j, *self.ps.robot.getChildJoints(j)]
 
     def computePossibleContacts(self):
         names = ["universe"]
@@ -210,8 +210,8 @@ class SecurityMargins:
         # Set security margin for each edge
         for e in graph.edges.keys():
             # first set requested security margin between each pair of objects
-            for i1, ro1 in enumerate(self.robotsAndObjects + ["universe"]):
-                for i2, ro2 in enumerate(self.robotsAndObjects + ["universe"]):
+            for i1, ro1 in enumerate([*self.robotsAndObjects, "universe"]):
+                for i2, ro2 in enumerate([*self.robotsAndObjects, "universe"]):
                     if i2 < i1:
                         continue
                     margin = self.getSecurityMarginBetween(ro1, ro2)

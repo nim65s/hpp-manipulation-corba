@@ -22,6 +22,7 @@ version = "5.0.0"
 extend-exclude = ["cmake"]
 
 [tool.ruff.lint]
+extend-ignore = ["RUF012"]
 extend-select = ["I", "NPY", "RUF", "UP", "W"]
 
 [tool.tomlsort]

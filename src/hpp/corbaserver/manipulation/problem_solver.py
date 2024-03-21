@@ -55,7 +55,7 @@ class ProblemSolver(Parent):
     """
 
     def __init__(self, robot):
-        super(ProblemSolver, self).__init__(robot, hppcorbaClient=robot.client.basic)
+        super().__init__(robot, hppcorbaClient=robot.client.basic)
 
     def selectProblem(self, name):
         """

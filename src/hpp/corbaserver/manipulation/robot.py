@@ -27,11 +27,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 # DAMAGE.
 
-from hpp.corbaserver.robot import Robot as Parent
-from hpp.corbaserver.robot import StaticStabilityConstraintsFactory
-
 from hpp.corbaserver import Client as BasicClient
 from hpp.corbaserver.manipulation import Client as ManipulationClient
+from hpp.corbaserver.robot import Robot as Parent
+from hpp.corbaserver.robot import StaticStabilityConstraintsFactory
 
 
 class CorbaClient:
@@ -71,7 +70,7 @@ class Robot(Parent):
         """
         if client is None:
             client = CorbaClient()
-        super(Robot, self).__init__(
+        super().__init__(
             robotName=compositeName,
             rootJointType=rootJointType,
             load=False,

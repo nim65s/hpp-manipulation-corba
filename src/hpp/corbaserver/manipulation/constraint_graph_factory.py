@@ -36,7 +36,7 @@ from .constraints import Constraints
 from .possible_grasps import PossibleGrasps
 
 
-class GraspIsAllowed(object):
+class GraspIsAllowed:
     """Class that stores grasp validation instances"""
 
     def __init__(self):
@@ -57,7 +57,7 @@ class GraspIsAllowed(object):
         self.graspValidations_.append(graspValidation)
 
 
-class Rules(object):
+class Rules:
     def __init__(self, grippers, handles, rules):
         rs = []
         status = []
@@ -569,7 +569,7 @@ class ConstraintFactory(ConstraintFactoryAbstract):
     pfields = ("placement", "placementComplement", "prePlacement")
 
     def __init__(self, graphfactory, graph):
-        super(ConstraintFactory, self).__init__(graphfactory)
+        super().__init__(graphfactory)
         self.graph = graph
 
     def buildGrasp(self, g, h):
@@ -760,7 +760,7 @@ class ConstraintGraphFactory(GraphFactoryAbstract):
         """
         \\param graph an instance of ConstraintGraph
         """
-        super(ConstraintGraphFactory, self).__init__()
+        super().__init__()
 
         # Stores the constraints in a child class of ConstraintFactoryAbstract
         self.constraints = ConstraintFactory(self, graph)
@@ -916,8 +916,8 @@ class ConstraintGraphFactory(GraphFactoryAbstract):
                     )
             wTransitions = []
             for i in range(nTransitions):
-                nf = "{0}_{1}{2}".format(names[0], i, i + 1)
-                nb = "{0}_{2}{1}".format(names[1], i, i + 1)
+                nf = f"{names[0]}_{i}{i + 1}"
+                nb = f"{names[1]}_{i + 1}{i}"
                 self.graph.createEdge(wStates[i], wStates[i + 1], nf, -1)
                 self.graph.createEdge(wStates[i + 1], wStates[i], nb, -1)
                 if crossedFoliation:

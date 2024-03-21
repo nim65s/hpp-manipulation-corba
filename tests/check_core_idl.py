@@ -1,9 +1,7 @@
-# coding: utf-8
-from hpp.corbaserver.tools import Tools
-
 from hpp.corbaserver import loadServerPlugin
 from hpp.corbaserver.manipulation import ProblemSolver, newProblem
 from hpp.corbaserver.manipulation.ur5 import Robot
+from hpp.corbaserver.tools import Tools
 
 loadServerPlugin("corbaserver", "manipulation-corba.so")
 
