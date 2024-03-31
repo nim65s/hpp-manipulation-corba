@@ -35,7 +35,7 @@
 # handles. Those handles are not meant to be grasped by a robot gripper.
 # This class helps defining in a simple way which gripper can grasp which
 # handle.
-class PossibleGrasps(object):
+class PossibleGrasps:
     def __init__(self, grippers, handles, grasps):
         """
         Constructor

@@ -28,14 +28,13 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 # DAMAGE.
 
-from __future__ import print_function
 
 from subprocess import Popen
 
 from .constraints import Constraints
 
 
-class ConstraintGraph(object):
+class ConstraintGraph:
     """
     Definition of a constraint graph.
 
@@ -100,7 +99,7 @@ class ConstraintGraph(object):
                The first should be the most restrictive one as a configuration
         will be in the first node for which the constraint are satisfied.
         """
-        if type(node) is str:
+        if isinstance(node, str):
             node = [node]
         if priority is None:
             priority = [
@@ -327,7 +326,7 @@ class ConstraintGraph(object):
         elif name in self.edges:
             id = self.edges[name]
         else:
-            raise RuntimeError("No node or edge with name {0}".format(name))
+            raise RuntimeError(f"No node or edge with name {name}")
         return self.client.problem.setConstraints(id, target)
 
     # Add the constraints to an edge, a node or the whole graph
@@ -377,7 +376,7 @@ class ConstraintGraph(object):
         pregrasps=None,
         numConstraints=[],
     ):
-        if type(graph) is not bool:
+        if not isinstance(graph, bool):
             raise TypeError(
                 "ConstraintGraph.addConstraints: "
                 + "graph argument should be a boolean, got "
@@ -508,7 +507,7 @@ class ConstraintGraph(object):
         If the name of a node or an edges is a key of the dictionnary,
         it is replaced by the corresponding value.
         """
-        if type(textToTex) is not dict:
+        if not isinstance(textToTex, dict):
             raise TypeError("Argument textToTex must be a dictionnary.")
         self.textToTex = textToTex
 
@@ -646,7 +645,7 @@ class ConstraintGraph(object):
         for n, id in self.nodes.items():
             if id == nodeId:
                 return n
-        raise RuntimeError("No node with id {0}".format(nodeId))
+        raise RuntimeError(f"No node with id {nodeId}")
 
     def getConfigErrorForEdge(self, edgeId, config):
         """

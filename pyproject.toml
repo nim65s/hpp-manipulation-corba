@@ -1,2 +1,29 @@
-[tool.black]
-exclude = "cmake"
+[build-system]
+build-backend = "cmeel.build"
+requires = [
+  "cmeel-boost ~= 1.83.0",
+  "cmeel[build]",
+  "hpp-corbaserver[build]",
+  "hpp-manipulation-urdf[build]"
+]
+
+[project]
+dependencies = [
+  "cmeel-boost ~= 1.83.0",
+  "hpp-corbaserver",
+  "hpp-manipulation-urdf"
+]
+description = "Corba server for manipulation planning"
+license = "BSD-2-Clause"
+name = "hpp-manipulation-corba"
+version = "5.0.0"
+
+[tool.ruff]
+extend-exclude = ["cmake"]
+
+[tool.ruff.lint]
+extend-ignore = ["RUF012"]
+extend-select = ["I", "NPY", "RUF", "UP", "W"]
+
+[tool.tomlsort]
+all = true
