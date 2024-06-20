@@ -1,7 +1,7 @@
 from hpp.corbaserver import loadServerPlugin
-from hpp.corbaserver.manipulation import ProblemSolver, newProblem
-from hpp.corbaserver.manipulation.ur5 import Robot
 from hpp.corbaserver.tools import Tools
+from hpp.manipulation import ProblemSolver, newProblem
+from hpp.manipulation.ur5 import Robot
 
 loadServerPlugin("corbaserver", "manipulation-corba.so")
 

@@ -36,7 +36,7 @@ def newProblem(client=None, name=None):
     from hpp.corbaserver.problem_solver import newProblem
 
     if client is None:
-        from hpp.corbaserver.manipulation import Client
+        from hpp.manipulation import Client
 
         client = Client()
     newProblem(client=client, name=name)

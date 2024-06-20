@@ -51,7 +51,7 @@ class Constraints:
 
             warn(
                 "argument lockedJoints in constructor of class "
-                + "hpp.corbaserver.manipulation.constraints.Constraints "
+                + "hpp.manipulation.constraints.Constraints "
                 + "is deprecated. Locked joints are handled as numerical "
                 + "constraints."
             )
