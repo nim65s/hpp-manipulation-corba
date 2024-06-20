@@ -359,7 +359,7 @@ module hpp {
 	/// contactsPerObject = [['object_1/contact_1',],
 	///    ['object_2/contact_1','object_2/contact_2',],
 	///    ['object_3/contact_1',]]
-	/// from hpp.manipulation import Rule
+	/// from hpp_manipulation import Rule
 	/// rules = [Rule(['gripper_1'], ['object_1/handle_2'], True),
 	///          Rule(['gripper_1'], ['object_3/handle_1'], True),]
 	/// \endcode

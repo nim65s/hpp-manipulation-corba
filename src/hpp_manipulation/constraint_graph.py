@@ -339,7 +339,7 @@ class ConstraintGraph:
     #
     # \\param constraints set of constraints containing grasps, pregrasps,
     #                    numerical constraints and locked joints.
-    #                    It must be of type hpp.manipulation.Constraints.
+    #                    It must be of type hpp_manipulation.Constraints.
     # \\note Exaclty one of the parameter graph, node and edge must be set.
     def addConstraints(self, graph=False, node=None, edge=None, constraints=None):
         """
@@ -353,7 +353,7 @@ class ConstraintGraph:
             node, edge: name of a component of the graph,
             constraints: set of constraints containing grasps, pregrasps,
                          numerical constraints and locked joints.
-                         It must be of type hpp.manipulation.Constraints.
+                         It must be of type hpp_manipulation.Constraints.
           note: Exaclty one of the parameter graph, node and edge must be set.
         """
         if not isinstance(constraints, Constraints):

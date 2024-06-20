@@ -1,6 +1,6 @@
 from hpp.corbaserver import Client
-from hpp.manipulation import Client as ManipClient
-from hpp.manipulation.robot import Robot
+from hpp_manipulation import Client as ManipClient
+from hpp_manipulation.robot import Robot
 
 cl = Client()
 mcl = ManipClient()

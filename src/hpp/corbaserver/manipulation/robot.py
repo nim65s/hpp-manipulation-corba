@@ -1,8 +1,8 @@
 import warnings
 
 warnings.warn(
-    "hpp.corbaserver.manipulation has been moved to hpp.manipulation",
+    "hpp.corbaserver.manipulation has been moved to hpp_manipulation",
     DeprecationWarning,
 )
 
-from hpp.manipulation.robot import *  # noqa: E402, F403
+from hpp_manipulation.robot import *  # noqa: E402, F403

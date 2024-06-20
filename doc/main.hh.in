@@ -16,7 +16,7 @@
 ///   \li hpp::corbaserver::manipulation::Robot.
 ///
 /// The client part is provided through python module
-/// \c hpp.manipulation
+/// \c hpp_manipulation
 ///
 /// An executable called \c hpp-manipulation-server is installed.
 /// This executable runs
@@ -33,7 +33,7 @@
 /// open a python terminal and type:
 ///
 ///     \code
-///     from hpp.manipulation import Client as ManipulationClient
+///     from hpp_manipulation import Client as ManipulationClient
 ///     mcl = ManipulationClient ()
 ///     \endcode
 ///

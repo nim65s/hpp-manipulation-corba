@@ -30,7 +30,8 @@
 from hpp.corbaserver import Client as BasicClient
 from hpp.corbaserver.robot import Robot as Parent
 from hpp.corbaserver.robot import StaticStabilityConstraintsFactory
-from hpp.manipulation import Client as ManipulationClient
+
+from hpp_manipulation import Client as ManipulationClient
 
 
 class CorbaClient:
