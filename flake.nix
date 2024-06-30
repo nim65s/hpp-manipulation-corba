@@ -14,21 +14,20 @@
     };
     hpp-corbaserver = {
       url = "github:humanoid-path-planner/hpp-corbaserver/release/5.1.0";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-parts.follows = "flake-parts";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.follows = "flake-parts";
+        hpp-core.follows = "hpp-manipulation-urdf/hpp-manipulation/hpp-core";
+        hpp-util.follows = "hpp-manipulation-urdf/hpp-manipulation/hpp-core/hpp-constraints/hpp-util";
+      };
     };
     hpp-manipulation-urdf = {
       url = "github:humanoid-path-planner/hpp-manipulation-urdf/release/5.1.0";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-parts.follows = "flake-parts";
-      inputs.hpp-corbaserver.follows = "hpp-corbaserver";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.follows = "flake-parts";
+      };
     };
-    #hpp-template-corba = {
-      #url = "github:humanoid-path-planner/hpp-template-corba/release/5.1.0";
-      #inputs.nixpkgs.follows = "nixpkgs";
-      #inputs.flake-parts.follows = "flake-parts";
-      #inputs.hpp-corbaserver.follows = "hpp-corbaserver";
-    #};
   };
 
   outputs =
@@ -54,7 +53,6 @@
             default = pkgs.callPackage ./. {
               hpp-corbaserver = inputs.hpp-corbaserver.packages.${system}.default;
               hpp-manipulation-urdf = inputs.hpp-manipulation-urdf.packages.${system}.default;
-              #hpp-template-corba = inputs.hpp-template-corba.packages.${system}.default;
             };
           };
           devShells.default = pkgs.mkShell { inputsFrom = [ self'.packages.default ]; };
