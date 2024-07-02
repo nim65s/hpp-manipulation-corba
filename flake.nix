@@ -13,7 +13,7 @@
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
     hpp-corbaserver = {
-      url = "github:humanoid-path-planner/hpp-corbaserver/release/5.1.0";
+      url = "github:humanoid-path-planner/hpp-corbaserver";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-parts.follows = "flake-parts";
@@ -22,7 +22,7 @@
       };
     };
     hpp-manipulation-urdf = {
-      url = "github:humanoid-path-planner/hpp-manipulation-urdf/release/5.1.0";
+      url = "github:humanoid-path-planner/hpp-manipulation-urdf";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-parts.follows = "flake-parts";
