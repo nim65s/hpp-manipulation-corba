@@ -28,8 +28,9 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 # DAMAGE.
 
-from hpp.corbaserver.client import Client as _Parent
 from hpp_idl.hpp.corbaserver.manipulation import Graph, Problem, Robot
+
+from hpp.corbaserver.client import Client as _Parent
 
 
 class Client(_Parent):
