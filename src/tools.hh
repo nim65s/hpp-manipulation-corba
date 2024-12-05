@@ -42,7 +42,7 @@ using corbaServer::toNames_t;
 using corbaServer::vectorToFloatSeq;
 using manipulation::DevicePtr_t;
 using manipulation::ProblemSolverPtr_t;
-using pinocchio::Transform3f;
+using pinocchio::Transform3s;
 
 inline std::vector<std::string> toStringVector(const Names_t& names) {
   typedef std::vector<std::string> Out_t;
@@ -54,14 +54,14 @@ inline std::list<std::string> toStringList(const Names_t& names) {
   return corbaServer::toStrings<Out_t>(names);
 }
 
-inline void Transform3fTohppTransform(const Transform3f& transform,
+inline void Transform3sTohppTransform(const Transform3s& transform,
                                       CORBA::Double* config) {
   corbaServer::toHppTransform(transform, config);
 }
 
-inline void hppTransformToTransform3f(const CORBA::Double* inConfig,
-                                      Transform3f& transform) {
-  corbaServer::toTransform3f(inConfig, transform);
+inline void hppTransformToTransform3s(const CORBA::Double* inConfig,
+                                      Transform3s& transform) {
+  corbaServer::toTransform3s(inConfig, transform);
 }
 
 DevicePtr_t getRobotOrThrow(ProblemSolverPtr_t p);

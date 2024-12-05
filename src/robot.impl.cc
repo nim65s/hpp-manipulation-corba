@@ -74,7 +74,7 @@ GripperOrHandle copy(const GripperOrHandle& in, const DevicePtr_t& device,
 template <>
 GripperPtr_t copy(const GripperPtr_t& in, const DevicePtr_t& device,
                   const std::string& p) {
-  Transform3f position = (in->joint() ? in->joint()->currentTransformation() *
+  Transform3s position = (in->joint() ? in->joint()->currentTransformation() *
                                             in->objectPositionInJoint()
                                       : in->objectPositionInJoint());
 
@@ -95,7 +95,7 @@ GripperPtr_t copy(const GripperPtr_t& in, const DevicePtr_t& device,
 template <>
 HandlePtr_t copy(const HandlePtr_t& in, const DevicePtr_t& device,
                  const std::string& p) {
-  Transform3f position =
+  Transform3s position =
       (in->joint() ? in->joint()->currentTransformation() * in->localPosition()
                    : in->localPosition());
 
@@ -264,7 +264,7 @@ void Robot::loadEnvironmentModel(const char* urdfName, const char* srdfName,
       JointAndShapes_t shapes;
       for (JointAndShapes_t::const_iterator itT = it->second.begin();
            itT != it->second.end(); ++itT) {
-        Transform3f M(Transform3f::Identity());
+        Transform3s M(Transform3s::Identity());
         if (itT->first) M = itT->first->currentTransformation();
         Shape_t newShape(itT->second.size());
         for (std::size_t i = 0; i < newShape.size(); ++i)
@@ -307,7 +307,7 @@ void Robot::loadEnvironmentModelFromString(const char* urdfString,
       JointAndShapes_t shapes;
       for (JointAndShapes_t::const_iterator itT = it->second.begin();
            itT != it->second.end(); ++itT) {
-        Transform3f M(Transform3f::Identity());
+        Transform3s M(Transform3s::Identity());
         if (itT->first) M = itT->first->currentTransformation();
         Shape_t newShape(itT->second.size());
         for (std::size_t i = 0; i < newShape.size(); ++i)
@@ -336,9 +336,9 @@ Transform__slice* Robot::getRootJointPosition(const char* robotName) {
     const ::pinocchio::Frame& rf = model.frames[frameIdx[0]];
     double* res = new Transform_;
     if (rf.type == ::pinocchio::JOINT)
-      Transform3fTohppTransform(model.jointPlacements[rf.parent], res);
+      Transform3sTohppTransform(model.jointPlacements[rf.parent], res);
     else
-      Transform3fTohppTransform(rf.placement, res);
+      Transform3sTohppTransform(rf.placement, res);
     return res;
   } catch (const std::exception& exc) {
     throw Error(exc.what());
@@ -350,8 +350,8 @@ void Robot::setRootJointPosition(const char* robotName,
   try {
     DevicePtr_t robot = getRobotOrThrow(problemSolver());
     std::string n(robotName);
-    Transform3f T;
-    hppTransformToTransform3f(position, T);
+    Transform3s T;
+    hppTransformToTransform3s(position, T);
     robot->setRobotRootPosition(n, T);
     robot->computeForwardKinematics();
   } catch (const std::exception& exc) {
@@ -365,7 +365,7 @@ void Robot::addHandle(const char* linkName, const char* handleName,
   try {
     DevicePtr_t robot = getRobotOrThrow(problemSolver());
     JointPtr_t joint = getJointByBodyNameOrThrow(problemSolver(), linkName);
-    Transform3f T;
+    Transform3s T;
 
     const ::pinocchio::Frame& linkFrame =
         robot->model().frames[robot->model().getFrameId(std::string(linkName))];
@@ -377,7 +377,7 @@ void Robot::addHandle(const char* linkName, const char* handleName,
       index = joint->index();
       jointName = joint->name();
     }
-    hppTransformToTransform3f(localPosition, T);
+    hppTransformToTransform3s(localPosition, T);
     HandlePtr_t handle =
         Handle::create(handleName, linkFrame.placement * T, robot, joint);
     handle->clearance(clearance);
@@ -400,7 +400,7 @@ void Robot::addGripper(const char* linkName, const char* gripperName,
   try {
     DevicePtr_t robot = getRobotOrThrow(problemSolver());
     JointPtr_t joint = getJointByBodyNameOrThrow(problemSolver(), linkName);
-    Transform3f T;
+    Transform3s T;
 
     const ::pinocchio::Frame& linkFrame =
         robot->model().frames[robot->model().getFrameId(std::string(linkName))];
@@ -412,7 +412,7 @@ void Robot::addGripper(const char* linkName, const char* gripperName,
       index = joint->index();
       jointName = joint->name();
     }
-    hppTransformToTransform3f(p, T);
+    hppTransformToTransform3s(p, T);
     assert(robot->model().existFrame(jointName));
     FrameIndex previousFrame(robot->model().getFrameId(jointName));
     robot->model().addFrame(
@@ -435,8 +435,8 @@ char* Robot::getGripperPositionInJoint(const char* gripperName,
     DevicePtr_t robot = getRobotOrThrow(problemSolver());
     GripperPtr_t gripper = robot->grippers.get(gripperName);
     if (!gripper) throw Error("This gripper does not exists.");
-    const Transform3f& t = gripper->objectPositionInJoint();
-    Transform3fTohppTransform(t, position);
+    const Transform3s& t = gripper->objectPositionInJoint();
+    Transform3sTohppTransform(t, position);
     if (gripper->joint())
       return c_str(gripper->joint()->name());
     else
@@ -452,8 +452,8 @@ char* Robot::getHandlePositionInJoint(const char* handleName,
     DevicePtr_t robot = getRobotOrThrow(problemSolver());
     HandlePtr_t handle = robot->handles.get(handleName);
     if (!handle) throw Error("This handle does not exists.");
-    const Transform3f& t = handle->localPosition();
-    Transform3fTohppTransform(t, position);
+    const Transform3s& t = handle->localPosition();
+    Transform3sTohppTransform(t, position);
     if (handle->joint())
       return c_str(handle->joint()->name());
     else
@@ -472,8 +472,8 @@ void Robot::setHandlePositionInJoint(const char* handleName,
     if (!handle)
       throw std::invalid_argument("Robot does not have any handle named " +
                                   name_str);
-    Transform3f t;
-    hppTransformToTransform3f(position, t);
+    Transform3s t;
+    hppTransformToTransform3s(position, t);
     handle->localPosition(t);
   } catch (const std::exception& exc) {
     throw Error(exc.what());
